@@ -1,2 +1,2 @@
 # Reddit-Realtime-Pipeline
-Kafka -> PySpark -> Cassandra -> Streamlit
+PRAW -> Kafka -> PySpark -> Cassandra -> Streamlit
