@@ -1,11 +1,17 @@
 from json import dumps
+import multiprocessing as mp
+from threading import Thread
 import praw
 from kafka import KafkaProducer
 from kafka.admin import KafkaAdminClient, NewTopic
 import configparser
+import os
+from time import sleep
 
 class Producer:
-    def __init__(self, credentials: str = "credentials.cfg"):
+    def __init__(self, topic_list: list, credentials: str = "credentials.cfg"):
+        self.topic_list = topic_list
+
         config = configparser.ConfigParser()
         config.read_file(open(credentials))
         
@@ -22,25 +28,49 @@ class Producer:
             bootstrap_servers=["localhost:9092"],
             client_id="admin")
     
-    def stream_data(self, subreddit_name):
-        subreddit = self.conn.subreddit(subreddit_name)
+    def single_stream(self, topic: str):
+        subreddit = self.conn.subreddit(topic)
 
-        if subreddit_name not in self.admin.list_topics():
-            self.admin.create_topics([NewTopic(name=subreddit_name, num_partitions=1, replication_factor=1)])
+        # if topic not in self.admin.list_topics():
+        #     self.admin.create_topics([NewTopic(name=topic, num_partitions=1, replication_factor=1)])
 
         for comment in subreddit.stream.comments(skip_existing=True):
-            self.producer.send(topic=subreddit_name, value={
+            self.producer.send(topic="comments", value={
                 "id": comment.id,
                 "author": comment.author.name,
                 "body": comment.body, 
                 "score": comment.score,
                 "created": comment.created,
                 "subreddit": comment.subreddit.display_name,
+                "flair": comment.submission.link_flair_text
             })
+
             print(comment.body)
+            print(comment.submission.link_flair_text)
             print()
 
+    def stream_data(self):
+        process_list = []
+        for topic in self.topic_list:
+            process = Thread(target=self.single_stream, args=(topic,))
+            process.daemon = True
+            process.start()
+            process_list.append(process)
+
+        for process in process_list:
+            process.join()
+        
+    
 if __name__ == "__main__":
-    producer = Producer()
-    producer.stream_data("AskReddit")
+    topic_list = []
+    while os.stat("topics.txt").st_size == 0:
+        sleep(0.5)
+    
+    with open("topics.txt", "r") as f:
+        for line in f:
+            if line.strip() != "":
+                topic_list.append(line.strip())
+
+    producer = Producer(topic_list)  
+    producer.stream_data() 
 
