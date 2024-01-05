@@ -1,5 +1,4 @@
 from json import dumps
-import multiprocessing as mp
 from threading import Thread
 import praw
 from kafka import KafkaProducer
@@ -40,13 +39,13 @@ class Producer:
                 "author": comment.author.name,
                 "body": comment.body, 
                 "score": comment.score,
-                "created": comment.created,
-                "subreddit": comment.subreddit.display_name,
+                "created": int(comment.created),
+                "subreddit": comment.subreddit.display_name.lower(),
                 "flair": comment.submission.link_flair_text
             })
 
             print(comment.body)
-            print(comment.submission.link_flair_text)
+            print(comment.created)
             print()
 
     def stream_data(self):

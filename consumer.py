@@ -1,7 +1,6 @@
 import pyspark
 import os
 from time import sleep
-from threading import Thread
 from pyspark.sql import SparkSession
 from cassandra.cluster import Cluster
 from pyspark.sql.functions import *
@@ -25,6 +24,7 @@ class Consumer:
             .config("spark.cassandra.connection.host", "127.0.0.1") \
             .config("spark.cassandra.connection.port", "9042") \
             .config("spark.streaming.stopGracefullyOnShutdown", True) \
+            .config("spark.sql.session.timeZone", "UTC") \
             .getOrCreate()
         
         self.schema = StructType([
@@ -32,7 +32,7 @@ class Consumer:
             StructField("author", StringType(), True),
             StructField("body", StringType(), True),
             StructField("score", IntegerType(), True),
-            StructField("created", FloatType(), True),
+            StructField("created", IntegerType(), True),
             StructField("subreddit", StringType(), True),
             StructField("flair", StringType(), True),
         ])
@@ -66,41 +66,38 @@ class Consumer:
                                             .otherwise("neutral")))
         return df
     
-    def nGram_analyzer(self, tokenized_df):
-        unigramlist = tokenized_df.withColumn("ngram", explode("cleaned_body")) \
-            .withWatermark("timestamp", "1 minute") \
-            .groupBy("ngram", "timestamp") \
+    def word_freq_analyzer(self, tokenized_df):
+        stopwordList = ["lol", "cant", "dont", "im", ""] 
+        stopwordList.extend(StopWordsRemover().getStopWords())
+
+        tokenizer = Tokenizer(inputCol="body", outputCol="tokenized_body")
+        remover = StopWordsRemover(inputCol="tokenized_body", outputCol="cleaned_body", stopWords=stopwordList)
+
+        df = tokenized_df.withColumn("body", trim(regexp_replace(col("body"), r"((www\.\S+)|(https?://\S+))|(\S+\.com)", "")))
+        df = df.withColumn("body", trim(regexp_replace(col("body"), r"[^\sa-zA-Z0-9]", "")))
+        df = df.withColumn("body", trim(regexp_replace(col("body"), r"(.)\1\1+", "")))
+
+        df = tokenizer.transform(df)
+        df = remover.transform(df)
+
+        freqlist = df.withColumn("ngram", explode("cleaned_body")) \
+            .groupBy("ngram") \
             .agg(mean("sentiment_score").alias("mean_sentiment"),
                 count("ngram").alias("frequency"))
-
-        bigramlist = tokenized_df.withColumn("ngram", explode("ng2_body")) \
-            .withWatermark("timestamp", "1 minute") \
-            .groupBy("ngram", "timestamp") \
-            .agg(mean("sentiment_score").alias("mean_sentiment"),
-                count("ngram").alias("frequency"))
-
-        freqlist = bigramlist.union(unigramlist) 
-        freqlist = freqlist.filter((col("ngram").isNotNull()) & (col("timestamp").isNotNull()) & (col("ngram") != ""))
+        
+        freqlist = freqlist.filter((col("ngram").isNotNull()) &
+                                    (col("ngram") != "") &
+                                    ~(col("ngram").rlike(r"^[\s0-9]+$")) &
+                                    (col("frequency") > 1))
         return freqlist
         
     def structure_data(self, df, topic):
         print("Begin structuring data...")
-        tokenizer = Tokenizer(inputCol="body", outputCol="tokenized_body")
-        ngram = NGram(n=2, inputCol="cleaned_body", outputCol="ng2_body")
-        remover = StopWordsRemover(inputCol="tokenized_body", outputCol="cleaned_body")
 
         df = df.filter(col("subreddit") == topic)
-        df = df.withColumn("timestamp", to_timestamp(from_unixtime(col("created").cast(FloatType()), "dd-MM-yyyy hh:mm:ss"), "dd-MM-yyyy hh:mm:ss"))
-        df = df.withColumn("body", (regexp_replace(col("body"), r"((www\.\S+)|(https?://\S+))|(\S+\.com)", "")))
-        df = df.withColumn("body", (regexp_replace(col("body"), r"[^\sa-zA-Z0-9]", "")))
-        df = df.withColumn("body", (regexp_replace(col("body"), r"(.)\1\1+", "")))
+        df = df.withColumn("timestamp", date_format(col("created").cast("timestamp"), "yyyy-MM-dd hh:mm:ss"))
         df = self.sentiment_analyzer(df)
-
-        df = tokenizer.transform(df)
-        df = remover.transform(df)
-        df = ngram.transform(df)
-
-        return df.drop("tokenized_body")
+        return df
         
     def write_stream(self, df, topic: str):
         session = self.cluster.connect()
@@ -111,17 +108,16 @@ class Consumer:
                 author text,
                 body text,
                 score int,
-                created float,
+                created int,
                 timestamp timestamp,
                 subreddit text,
                 sentiment_score float,
                 sentiment_tag text,
                 flair text,
-                cleaned_body list<text>,
+                cleaned_body list<text>,    
                 ng2_body list<text>,
-                PRIMARY KEY(id, created)
-            )
-            WITH CLUSTERING ORDER BY (created DESC);
+                PRIMARY KEY(timestamp, created, id)
+            ) WITH CLUSTERING ORDER BY (created DESC);
         """)
 
         session.execute(f"""
@@ -129,47 +125,38 @@ class Consumer:
                 ngram text,
                 frequency int,
                 mean_sentiment float,
-                timestamp timestamp,
-                PRIMARY KEY(ngram, frequency)
-            )
-            WITH CLUSTERING ORDER BY (frequency DESC);
+                PRIMARY KEY(ngram)
+            );
         """)
 
         df.writeStream \
             .format("console")\
-            .outputMode("append")\
+            .outputMode("append") \
             .start()
-
-        # self.nGram_analyzer(df).writeStream \
-        #     .option("failOnDataLoss", "false") \
-        #     .format("org.apache.spark.sql.cassandra") \
-        #     .options(table=f"{topic}_freqtable", keyspace="reddit") \
-        #     .option("checkpointLocation", f"./pyspark-checkpoint/freq-table/{topic}") \
-        #     .start()
-
-        self.nGram_analyzer(df).writeStream \
-            .trigger(processingTime="1 second") \
-            .foreachBatch(
-                lambda batchDF, batchID: batchDF.write.format("org.apache.spark.sql.cassandra") \
-                    .option("checkpointLocation", f"./pyspark-checkpoint/freq-table/{topic}") \
-                    .options(table=f"{topic}_freqtable", keyspace="reddit") \
-                    .mode("append").save()
-            ).outputMode("update").start()
         
         df.writeStream \
+            .outputMode("append") \
             .option("failOnDataLoss", "false") \
             .format("org.apache.spark.sql.cassandra") \
             .options(table=topic, keyspace="reddit") \
             .option("checkpointLocation", f"./pyspark-checkpoint/comments/{topic}") \
             .start()
 
+        self.word_freq_analyzer(df).writeStream \
+            .foreachBatch(
+                lambda batchDF, batchID: batchDF.write.format("org.apache.spark.sql.cassandra") \
+                    .option("checkpointLocation", f"./pyspark-checkpoint/freq-table/{topic}") \
+                    .options(table=f"{topic}_freqtable", keyspace="reddit") \
+                    .mode("append").save()
+            ).outputMode("complete").start()
+
     def process_stream(self):
-        df = consumer.read_stream()
+        df = self.read_stream()
         for topic in self.topic_list:
             print(f"Working on topic {topic}")
             df_new = df.alias('df_new')
-            df_new = consumer.structure_data(df_new, topic)
-            consumer.write_stream(df_new, topic)
+            df_new = self.structure_data(df_new, topic)
+            self.write_stream(df_new, topic)
         
         self.spark.streams.awaitAnyTermination()
 
