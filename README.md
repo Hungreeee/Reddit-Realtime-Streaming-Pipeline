@@ -53,7 +53,7 @@ docker-compose up
 ```
 
 Then, start the producer and consumer using the following commands:
-> Please note that the producer is an *Unstoppable Thread*, so you have to kill the terminal the producer is running on to terminate the whole process.
+> Unfortunately, because the producer is an *Unstoppable Thread*, you will have to kill the terminal the producer is running on to terminate it.
 ```
 py producer.py
 py consumer.py
