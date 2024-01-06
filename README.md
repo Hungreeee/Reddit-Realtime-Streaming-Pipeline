@@ -35,5 +35,5 @@ streamlit run streamlit/main.py
 ```
 
 ## Acknowledgements
-
+Inspired greatly by [nama1arpit/reddit-streaming-pipeline](https://github.com/nama1arpit/reddit-streaming-pipeline/tree/main)
 
