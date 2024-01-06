@@ -1,9 +1,17 @@
 # Reddit-Realtime-Streaming-Pipeline
 
 ## Introduction
-This is an end-to-end project dedicated to streaming, processing, and visualizing the sentiment aspects of any subreddit on Reddit. It utilizes the Python Reddit API Wrapper (PRAW) to crawl live comments from a subreddit to distribute them into Kafka as streams. The streams are then processed in PySpark, and the processed data are written to a Cassandra cluster. Finally, Streamlit reads the data from Cassandra and displays them in an interface. 
+This is an end-to-end project dedicated to streaming, processing, and visualizing the sentiment aspects of Reddit. The main tech stacks are:
 
-The overall setup is fairly simple, yet it involves many different stages of operation to function correctly. As such, the project is containerized with the help of Docker and docker-compose.  
+- PRAW: A Python library that allows easy access to the Reddit API, and enables crawling live comments from any subreddit.
+- Kafka: A distributed streaming platform that can handle large volumes of data, and acts as a buffer between the crawler and the processor.
+- PySpark: A Python interface for Apache Spark, a powerful framework for large-scale data processing. 
+- Cassandra: A distributed database that provides high availability and scalability. 
+- Streamlit: A Python library that simplifies the creation of web applications. 
+
+It utilizes the Python Reddit API Wrapper (PRAW) to crawl live comments from a subreddit to distribute them into Kafka as streams. The streams are then processed in PySpark, and the processed data are written to a Cassandra cluster. Finally, Streamlit reads the data from Cassandra and displays them in an interface.
+  
+The pipeline is designed to be scalable and can be easily deployed using Docker and docker-compose. The system can be used to monitor the sentiment trends of any subreddit and gain insights into the opinions and emotions of the Reddit community.
 
 ## Structure
 
