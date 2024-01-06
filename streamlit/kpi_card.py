@@ -26,9 +26,9 @@ def render(df):
   col1, col2, col3 = st.columns([0.33, 0.4, 0.27], gap="small")
   with col1:
     mean_sentiment_score = np.mean(df["sentiment_score"])
-    st.metric("Sentiment score", np.round(mean_sentiment_score, 2), "overall " + "positive" 
+    st.metric("Sentiment score", np.round(mean_sentiment_score, 2), "overall " + ("positive" 
               if mean_sentiment_score >= 0.05 else "negative" 
-              if mean_sentiment_score <= -0.05 else "neutral", delta_color="off")
+              if mean_sentiment_score <= -0.05 else "neutral"), delta_color="off")
   with col2:
     total_cmt = len(df)
     st.metric("Total number of comments", total_cmt, "comments so far", delta_color="off")

@@ -25,48 +25,54 @@ def color_highlight2(val):
 def disable():
     st.session_state["disabled"] = True
 
-def read_cassandra(cluster, topic_name):
+def read_cassandra(cluster):
   session = cluster.connect()
   while True:
     try:
-      check = pd.DataFrame(list(session.execute(f"SELECT * from reddit.{topic_name}")))
-      check = pd.DataFrame(list(session.execute(f"SELECT * from reddit.{topic_name}_freqtable")))
+      check = pd.DataFrame(list(session.execute(f"SELECT * from reddit.comments")))
+      check = pd.DataFrame(list(session.execute(f"SELECT * from reddit.comments_freqtable")))
       break
     except Exception:
       print("Retrying connection to table...")
 
-  df2 = pd.DataFrame(list(session.execute(f"SELECT body, sentiment_tag, sentiment_score, author, timestamp from reddit.{topic_name}")))
-
+  df2 = pd.DataFrame(list(session.execute(f"""
+        SELECT 
+          body, 
+          sentiment_tag, 
+          sentiment_score, 
+          author, 
+          timestamp 
+        FROM reddit.comments
+        """)))
   df1 = pd.DataFrame(list(session.execute(f"""
         SELECT 
           timestamp, 
           SUM(sentiment_score) / COUNT(sentiment_score) AS sentiment_score
-        FROM reddit.{topic_name}
+        FROM reddit.comments
         GROUP BY timestamp;
         """)))
-    
   df = pd.DataFrame(list(session.execute(f"""
         SELECT 
           ngram,
           SUM(frequency) AS frequency,
           SUM(frequency * mean_sentiment) / SUM(frequency) AS mean_sentiment
-        FROM reddit.{topic_name}_freqtable
+        FROM reddit.comments_freqtable
         GROUP BY ngram;
         """)))
   
   if not df.empty:
-    df = df.sort_values("frequency", ascending=False)
-
+    df = df.sort_values("frequency", ascending=False).head(20)
   if not df1.empty:
     df1 = df1.sort_values("timestamp", ascending=False)
-
   if not df2.empty:
     df2 = df2.sort_values("timestamp", ascending=False)
 
   return (df2, df1, df)
 
+
+
 def render(cluster):
-  st.title("Testing program")
+  st.title("Subreddit sentiment dashboard")
 
   if "disabled" not in st.session_state:
     st.session_state["disabled"] = False
@@ -85,7 +91,7 @@ def render(cluster):
 
     while(True):
       with placeholder.container():
-        df2, df1, df = read_cassandra(cluster, topic_name)
+        df2, df1, df = read_cassandra(cluster)
         if not (df.empty or df1.empty or df2.empty):
           cen1, cen2, cen3 = st.columns([0.15, 0.8, 0.05], gap="medium")
           with cen2:
@@ -143,6 +149,7 @@ def render(cluster):
     
       sleep(1)
     
+
 
 if __name__ == "__main__":
   cluster = Cluster(['127.0.0.1'], port=9042)

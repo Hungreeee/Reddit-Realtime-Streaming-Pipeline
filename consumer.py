@@ -2,7 +2,6 @@ import pyspark
 import os
 from time import sleep
 from pyspark.sql import SparkSession
-from cassandra.cluster import Cluster
 from pyspark.sql.functions import *
 from pyspark.ml.feature import Tokenizer, StopWordsRemover, NGram
 from pyspark.sql.types import StringType, IntegerType, StructField, StructType, FloatType
@@ -14,8 +13,6 @@ findspark.init()
 class Consumer:
     def __init__(self, topic_list: str):
         self.topic_list = topic_list
-        
-        self.cluster = Cluster(['127.0.0.1'], port=9042)
 
         self.spark = SparkSession \
             .builder \
@@ -67,7 +64,7 @@ class Consumer:
         return df
     
     def word_freq_analyzer(self, tokenized_df):
-        stopwordList = ["lol", "cant", "dont", "im", ""] 
+        stopwordList = ["lol", "cant", "dont", "im"] 
         stopwordList.extend(StopWordsRemover().getStopWords())
 
         tokenizer = Tokenizer(inputCol="body", outputCol="tokenized_body")
@@ -100,35 +97,6 @@ class Consumer:
         return df
         
     def write_stream(self, df, topic: str):
-        session = self.cluster.connect()
-        
-        session.execute(f"""
-            CREATE TABLE IF NOT EXISTS reddit.{topic}(
-                id text,
-                author text,
-                body text,
-                score int,
-                created int,
-                timestamp timestamp,
-                subreddit text,
-                sentiment_score float,
-                sentiment_tag text,
-                flair text,
-                cleaned_body list<text>,    
-                ng2_body list<text>,
-                PRIMARY KEY(timestamp, created, id)
-            ) WITH CLUSTERING ORDER BY (created DESC);
-        """)
-
-        session.execute(f"""
-            CREATE TABLE IF NOT EXISTS reddit.{topic}_freqtable(
-                ngram text,
-                frequency int,
-                mean_sentiment float,
-                PRIMARY KEY(ngram)
-            );
-        """)
-
         df.writeStream \
             .format("console")\
             .outputMode("append") \
@@ -138,7 +106,7 @@ class Consumer:
             .outputMode("append") \
             .option("failOnDataLoss", "false") \
             .format("org.apache.spark.sql.cassandra") \
-            .options(table=topic, keyspace="reddit") \
+            .options(table="comments", keyspace="reddit") \
             .option("checkpointLocation", f"./pyspark-checkpoint/comments/{topic}") \
             .start()
 
@@ -146,7 +114,7 @@ class Consumer:
             .foreachBatch(
                 lambda batchDF, batchID: batchDF.write.format("org.apache.spark.sql.cassandra") \
                     .option("checkpointLocation", f"./pyspark-checkpoint/freq-table/{topic}") \
-                    .options(table=f"{topic}_freqtable", keyspace="reddit") \
+                    .options(table="comments_freqtable", keyspace="reddit") \
                     .mode("append").save()
             ).outputMode("complete").start()
 

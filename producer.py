@@ -8,11 +8,11 @@ import os
 from time import sleep
 
 class Producer:
-    def __init__(self, topic_list: list, credentials: str = "credentials.cfg"):
+    def __init__(self, topic_list: list):
         self.topic_list = topic_list
 
         config = configparser.ConfigParser()
-        config.read_file(open(credentials))
+        config.read_file(open("credentials.cfg"))
         
         self.conn = praw.Reddit(
             client_id=config.get("reddit-cred", "client_id"), 
