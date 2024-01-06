@@ -34,30 +34,37 @@ Below is an example use case of the dashboard with the subreddit "r/worldnews":
 
 https://github.com/Hungreeee/Reddit-Realtime-Streaming-Pipeline/assets/46376260/e99fbcc4-1c5b-4390-be61-1e25088707da
 
+Please note that the chosen metrics and visualizations only serve for prototyping purposes, and they may not be applicable to scale or run over a prolonged period. 
+
 ## Installation & Setup
+
+To deploy the project locally, you first have to put your credentials for Reddit API in `credentials.cfg`. The API tokens/keys can be obtained by creating a new application [here](https://old.reddit.com/prefs/apps).
 
 ```
 [reddit-cred]
-client_id = 
-client_secret = 
-user_agent = 
+client_id = [YOUR APPLICATION ID]
+client_secret = [YOUR CLIENT SECRET]
+user_agent = [YOUR APPLICATION NAME]
 ```
 
+You can proceed by starting `docker-compose` to initiate the Zookeeper, Kafka, and Cassandra containers needed for the pipeline using the command:
 ```
 docker-compose up
 ```
 
+Then, start the producer and consumer using the following commands:
+> Please note that the producer is an *Unstoppable Thread*, so you have to kill the terminal to terminate the whole process.
 ```
 py producer.py
-```
-
-```
 py consumer.py
 ```
 
+Finally, you use the following command to access the Streamlit user interface. Only after a valid subreddit name is provided as input will the pipeline start operating. 
 ```
 streamlit run streamlit/main.py
 ```
+
+As a final note, if you want to switch to using a different query (subreddit), you will have to stop the producer-consumer and refresh Streamlit. 
 
 ## Acknowledgements
 Inspired greatly by [nama1arpit/reddit-streaming-pipeline](https://github.com/nama1arpit/reddit-streaming-pipeline/tree/main)
