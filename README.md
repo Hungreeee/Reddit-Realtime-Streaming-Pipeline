@@ -34,7 +34,7 @@ Below is an example use case of the dashboard with the subreddit "r/worldnews":
 
 https://github.com/Hungreeee/Reddit-Realtime-Streaming-Pipeline/assets/46376260/e99fbcc4-1c5b-4390-be61-1e25088707da
 
-Please note that the chosen metrics and visualizations only serve for prototyping purposes, and they may not be applicable to scale or run over a prolonged period. 
+Please note that the chosen metrics and visualizations only serve for prototyping purposes, and they may not be meaningful once scaled or run over a prolonged period. 
 
 ## Installation & Setup
 
