@@ -5,11 +5,6 @@ This is an end-to-end project dedicated to streaming, processing, and visualizin
 
 The overall setup is relatively basic, yet it involves many different stages to function correctly. As such, the project is containerized using Docker and docker-compose.  
 
-## Example
-Below is an example use case of the dashboard with the subreddit "r/worldnews":
-
-https://github.com/Hungreeee/Reddit-Realtime-Streaming-Pipeline/assets/46376260/e99fbcc4-1c5b-4390-be61-1e25088707da
-
 ## Structure
 
 ![asaaa (5)](https://github.com/Hungreeee/Reddit-Realtime-Streaming-Pipeline/assets/46376260/ae39057e-d5de-4f43-b1b8-6c1b328191c1)
@@ -33,6 +28,11 @@ Upon starting, `docker-compose` executes a CQL script to initialize keyspace and
 **5. User Interface**
 
 On startup, the Streamlit interface allows the user to create a query of a subreddit name. This information is fed to the producer and consumer through an event listener, which then triggers them to start working. Finally, through connection to the Cassandra cluster, the interface makes queries continuously and visualizes the data. 
+
+## Example
+Below is an example use case of the dashboard with the subreddit "r/worldnews":
+
+https://github.com/Hungreeee/Reddit-Realtime-Streaming-Pipeline/assets/46376260/e99fbcc4-1c5b-4390-be61-1e25088707da
 
 ## Installation & Setup
 
