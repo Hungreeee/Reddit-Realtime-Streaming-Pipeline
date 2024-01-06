@@ -11,17 +11,23 @@ The overall setup is relatively basic, yet it involves many different stages to 
 
 **1. Data Source**
 
-Upon receiving the subreddit name from the user query and API credentials from `credentials.cfg`, PRAW starts a comment stream of the specified subreddit and parses the data in JSON format into a Kakfa producer. The producer then sends the data to the Kafka broker as a topic. 
+Upon receiving the subreddit name from the user query and API credentials from `credentials.cfg`, PRAW starts a comment stream of the specified subreddit and parses the data in JSON format into a Kakfa producer. The producer then sends the data to the Kafka broker into a topic.
 
 **2. Message Broker**
 
-The Kafka broker starts a comment stream 
+On startup, docker-compose automatically creates a specified topic for the comment stream. Accompanied by Zookeeper, the Kafka broker then distributes the message from the producer to the downstream consumer.
 
-3. Stream Processor
+**3. Stream Processor**
 
-4. Data Storage
+A consumer subscribed to the topic passes the data to PySpark, which is responsible for structuring the JSON data into specific formats and data sets. This includes NLTK sentiment classification, tokenizing, and many other complex downstream tasks. PySpark then starts a continuous writing stream to a Cassandra cluster. 
 
-5. User Interface
+**4. Data Storage**
+
+Upon starting, docker-compose executes a CQL script to initialize keyspace and tables. The Cassandra cluster, with a simple single-node setup, connects to the PySpark writing stream to receive and store the data. 
+
+**5. User Interface**
+
+On startup, the Streamlit interface allows the user to create a query of a subreddit name. This information is fed to the producer and consumer through an event listener, which then triggers them to start working. Finally, through connection to the Cassandra cluster, the interface makes queries continuously and visualizes the data. 
 
 ## Installation & Setup
 
