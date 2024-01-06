@@ -7,6 +7,8 @@ The overall setup is fairly simple, yet it involves many different stages of ope
 
 ## Structure
 
+The complete flow of the project is illustrated in the following figure:
+
 ![asaaa (5)](https://github.com/Hungreeee/Reddit-Realtime-Streaming-Pipeline/assets/46376260/ae39057e-d5de-4f43-b1b8-6c1b328191c1)
 
 **1. Data Source**
