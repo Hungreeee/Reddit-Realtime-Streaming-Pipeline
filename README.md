@@ -9,7 +9,6 @@ The overall setup is relatively basic, yet it involves many different stages to 
 
 ![asaaa (4)](https://github.com/Hungreeee/Reddit-Realtime-Streaming-Pipeline/assets/46376260/d4f9c512-757d-470e-8708-626dbf8cf7ad)
 
-
 ## Installation & Setup
 
 ```
