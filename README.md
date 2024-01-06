@@ -5,6 +5,9 @@ This is an end-to-end project dedicated to streaming, processing, and visualizin
 
 The overall setup is relatively basic, yet it involves many different stages to function correctly. As such, the project is containerized using Docker and docker-compose.  
 
+## Example
+
+
 ## Structure
 
 ![asaaa (5)](https://github.com/Hungreeee/Reddit-Realtime-Streaming-Pipeline/assets/46376260/ae39057e-d5de-4f43-b1b8-6c1b328191c1)
