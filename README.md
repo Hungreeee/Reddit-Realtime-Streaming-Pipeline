@@ -1,4 +1,4 @@
-# Reddit-Realtime-Pipeline
+# Reddit-Realtime-Streaming-Pipeline
 
 ## Introduction
 This is an end-to-end project dedicated to streaming, processing, and visualizing the sentiment aspects of any subreddit on Reddit. It utilizes the Python Reddit API Wrapper (PRAW) to crawl live comments from a subreddit to distribute them into Kafka as streams. The streams are then processed in PySpark, and the processed data are written to a Cassandra cluster. Finally, Streamlit reads the data from Cassandra and displays them in an interface. 
