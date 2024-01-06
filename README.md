@@ -5,9 +5,23 @@ This is an end-to-end project dedicated to streaming, processing, and visualizin
 
 The overall setup is relatively basic, yet it involves many different stages to function correctly. As such, the project is containerized using Docker and docker-compose.  
 
-## The pipeline
+## Structure
 
-![asaaa (4)](https://github.com/Hungreeee/Reddit-Realtime-Streaming-Pipeline/assets/46376260/d4f9c512-757d-470e-8708-626dbf8cf7ad)
+![asaaa (5)](https://github.com/Hungreeee/Reddit-Realtime-Streaming-Pipeline/assets/46376260/ae39057e-d5de-4f43-b1b8-6c1b328191c1)
+
+**1. Data Source**
+
+Upon receiving the subreddit name from the user query and API credentials from `credentials.cfg`, PRAW starts a comment stream of the specified subreddit and parses the data in JSON format into a Kakfa producer. The producer then sends the data to the Kafka broker as a topic. 
+
+**2. Message Broker**
+
+The Kafka broker starts a comment stream 
+
+3. Stream Processor
+
+4. Data Storage
+
+5. User Interface
 
 ## Installation & Setup
 
