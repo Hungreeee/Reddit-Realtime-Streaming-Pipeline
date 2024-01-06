@@ -64,7 +64,7 @@ Finally, you use the following command to access the Streamlit user interface. O
 streamlit run streamlit/main.py
 ```
 
-As a final note, if you want to switch to using a different query (subreddit), you will have to stop the producer-consumer and refresh Streamlit. 
+As a final note, if you want to switch to using a different query (subreddit), you will have to restart (terminate and start again) the producer-consumer and refresh Streamlit. 
 
 ## Acknowledgements
 Inspired greatly by [nama1arpit/reddit-streaming-pipeline](https://github.com/nama1arpit/reddit-streaming-pipeline/tree/main)
