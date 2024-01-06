@@ -11,6 +11,28 @@ The overall setup is relatively basic, yet it involves many different stages to 
 
 ## Installation & Setup
 
+```
+[reddit-cred]
+client_id = 
+client_secret = 
+user_agent = 
+```
+
+```
+docker-compose up
+```
+
+```
+py producer.py
+```
+
+```
+py consumer.py
+```
+
+```
+streamlit run streamlit/main.py
+```
 
 ## Acknowledgements
 
