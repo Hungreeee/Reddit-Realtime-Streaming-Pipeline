@@ -9,7 +9,7 @@ This is an end-to-end project dedicated to streaming, processing, and visualizin
 - Cassandra: A distributed database that provides high availability and scalability. 
 - Streamlit: A Python library that simplifies the creation of web applications. 
 
-It utilizes the Python Reddit API Wrapper (PRAW) to crawl live comments from a subreddit to distribute them into Kafka as streams. The streams are then processed in PySpark, and the processed data are written to a Cassandra cluster. Finally, Streamlit reads the data from Cassandra and displays them in an interface.
+It utilizes the Python Reddit API Wrapper (PRAW) to crawl live comments from a subreddit to distribute them into Kafka as streams. The streams are then processed in PySpark, and the processed data are written to a Cassandra cluster. Finally, Streamlit reads the data from Cassandra and displays them on a GUI.
   
 The pipeline is designed to be scalable and can be easily deployed using Docker and docker-compose. The system can be used to monitor the sentiment trends of any subreddit and gain insights into the opinions and emotions of the Reddit community.
 
