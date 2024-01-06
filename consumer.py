@@ -1,6 +1,5 @@
 import pyspark
 import os
-from time import sleep
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.ml.feature import Tokenizer, StopWordsRemover, NGram
@@ -132,7 +131,7 @@ class Consumer:
 if __name__ == "__main__":
     topic_list = []
     while os.stat("topics.txt").st_size == 0:
-        sleep(0.5)
+        continue
     
     with open("topics.txt", "r") as f:
         for line in f:

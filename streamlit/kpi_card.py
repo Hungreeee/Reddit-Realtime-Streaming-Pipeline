@@ -1,6 +1,4 @@
 import streamlit as st
-import pandas as pd
-from time import sleep
 import numpy as np
 
 import os

@@ -12,18 +12,23 @@ sys.dont_write_bytecode = True
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(CURRENT_DIR + '/../'))
 
+
 st.set_page_config(layout="wide")
+
 
 def color_highlight1(val):
   color = "green" if val == "positive" else "red" if val == "negative" else "orange" 
   return f'color: {color}'
 
+
 def color_highlight2(val):
   color = "green" if val >= 0.05 else "red" if val <= -0.05 else "orange" 
   return f'color: {color}'
 
+
 def disable():
-    st.session_state["disabled"] = True
+  st.session_state["disabled"] = True
+
 
 def read_cassandra(cluster):
   session = cluster.connect()
@@ -70,7 +75,6 @@ def read_cassandra(cluster):
   return (df2, df1, df)
 
 
-
 def render(cluster):
   st.title("Subreddit sentiment dashboard")
 
@@ -84,20 +88,24 @@ def render(cluster):
 
   if topic_name != "":
     st.caption(f"You choose topic {topic_name}")
-    with open(f'{CURRENT_DIR}/../topics.txt', 'w') as f:
-      f.write(f"{topic_name}\n")
 
+    with open(f"{CURRENT_DIR}/../topics.txt", "w") as f:
+      f.write(f"{topic_name}\n")
+  
     placeholder = st.empty()
 
     while(True):
       with placeholder.container():
         df2, df1, df = read_cassandra(cluster)
+        open(f"{CURRENT_DIR}/../topics.txt", "w").close()
+
         if not (df.empty or df1.empty or df2.empty):
-          cen1, cen2, cen3 = st.columns([0.15, 0.8, 0.05], gap="medium")
+          _, cen2, _ = st.columns([0.15, 0.8, 0.05], gap="medium")
           with cen2:
             kpi_card.render(df2)
 
           col1, col2 = st.columns([0.5, 0.5], gap="small")
+
           with col2: 
             fig = px.line(df1, x="timestamp", y="sentiment_score", markers=True, title="Mean sentiment per second")
             if df1["timestamp"].iloc[0] - datetime.timedelta(seconds=30) >= df1["timestamp"].iloc[-1]:
@@ -109,6 +117,7 @@ def render(cluster):
             st.dataframe(df2[["body", "sentiment_tag"]].style.applymap(color_highlight1, subset=["sentiment_tag"]), hide_index=True)
 
           col3, col4, col5 = st.columns([0.23, 0.52, 0.3], gap="small")
+
           with col3:
             st.markdown("###### Top words")
             st.dataframe(df.style.map(color_highlight2, subset=["mean_sentiment"]), hide_index=True)
@@ -146,7 +155,7 @@ def render(cluster):
                         title="Sentiment disitribution")
             fig.update_layout(showlegend=False, width=400)
             st.plotly_chart(fig)
-    
+  
       sleep(1)
     
 
