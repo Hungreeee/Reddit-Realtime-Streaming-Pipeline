@@ -8,7 +8,7 @@ The overall setup is relatively basic, yet it involves many different stages to 
 ## Example
 Below is an example use case of the dashboard with the subreddit "r/worldnews":
 
-![2a0c8196-d4e2-4387-afff-350d3f5edb7e](https://github.com/Hungreeee/Reddit-Realtime-Streaming-Pipeline/assets/46376260/1f6af525-0abc-4720-9082-5429fb5f05f2)
+https://github.com/Hungreeee/Reddit-Realtime-Streaming-Pipeline/assets/46376260/e99fbcc4-1c5b-4390-be61-1e25088707da
 
 ## Structure
 
