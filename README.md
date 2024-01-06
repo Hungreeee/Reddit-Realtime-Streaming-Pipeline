@@ -30,7 +30,7 @@ Upon starting, `docker-compose` executes a CQL script to initialize keyspace and
 On startup, the Streamlit interface allows the user to create a query of a subreddit name. This information is fed to the producer and consumer through an event listener, which then triggers them to start working. Finally, through connection to the Cassandra cluster, the interface makes queries continuously and visualizes the data. 
 
 ## Example
-Below is an example use case of the dashboard with the subreddit "r/worldnews":
+Below is an example use case of the dashboard with the subreddit [r/worldnews](https://www.reddit.com/r/worldnews/):
 
 https://github.com/Hungreeee/Reddit-Realtime-Streaming-Pipeline/assets/46376260/e99fbcc4-1c5b-4390-be61-1e25088707da
 
