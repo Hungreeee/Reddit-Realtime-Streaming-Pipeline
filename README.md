@@ -11,7 +11,7 @@ This is an end-to-end project dedicated to streaming, processing, and visualizin
 
 It utilizes the Python Reddit API Wrapper (PRAW) to crawl live comments from a subreddit to distribute them into Kafka as streams. The streams are then processed in PySpark, and the processed data are written to a Cassandra cluster. Finally, Streamlit reads the data from Cassandra and displays them on a GUI.
   
-The main streaming pipeline is designed towards simplicity and effectiveness. It is deployed using Docker and docker-compose. 
+The streaming pipeline is designed towards simplicity and effectiveness. It is deployed using Docker and docker-compose. 
 
 ## Structure
 
