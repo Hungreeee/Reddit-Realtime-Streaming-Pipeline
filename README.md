@@ -4,9 +4,9 @@
 This is an end-to-end project dedicated to streaming, processing, and visualizing the sentiment aspects of Reddit. The main tech stacks are:
 
 - PRAW: A Python library that allows easy access to the Reddit API, and enables crawling live comments from any subreddit.
-- Kafka: A distributed streaming platform that can handle large volumes of data, and acts as a buffer between the crawler and the processor.
+- Kafka: A distributed streaming system that can handle large throughput of data and acts as a broker between the crawler and the processor.
 - PySpark: A Python interface for Apache Spark, a powerful framework for large-scale data processing. 
-- Cassandra: A distributed database that provides high availability and scalability. 
+- Cassandra: A distributed NoSQL database system that provides high availability and scalability. 
 - Streamlit: A Python library that simplifies the creation of web applications. 
 
 It utilizes the Python Reddit API Wrapper (PRAW) to crawl live comments from a subreddit to distribute them into Kafka as streams. The streams are then processed in PySpark, and the processed data are written to a Cassandra cluster. Finally, Streamlit reads the data from Cassandra and displays them on a GUI.
@@ -77,5 +77,5 @@ streamlit run streamlit/main.py
 As a final note, if you want to query a different subreddit name, you will have to restart (terminate and start again) the producer-consumer and refresh Streamlit. 
 
 ## Acknowledgements
-Inspired greatly by [nama1arpit/reddit-streaming-pipeline](https://github.com/nama1arpit/reddit-streaming-pipeline/tree/main)
+Inspired by [nama1arpit/reddit-streaming-pipeline](https://github.com/nama1arpit/reddit-streaming-pipeline/tree/main)
 
