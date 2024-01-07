@@ -63,7 +63,7 @@ class Consumer:
         return df
     
     def word_freq_analyzer(self, tokenized_df):
-        stopwordList = ["lol", "cant", "dont", "im"] 
+        stopwordList = ["lol", "cant", "dont", "im", "doesnt"] 
         stopwordList.extend(StopWordsRemover().getStopWords())
 
         tokenizer = Tokenizer(inputCol="body", outputCol="tokenized_body")
