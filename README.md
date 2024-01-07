@@ -48,6 +48,12 @@ Please note that the chosen metrics and visualizations only serve for prototypin
 
 ## Installation & Setup
 
+System requirements:
+- `cassandra: 4.1.0`
+- `kafka: 3.6.1`
+- `zookeeper: 3.8.3`
+- `pyspark: 3.5.0`
+
 To deploy the project locally, you first have to put your credentials for Reddit API in `credentials.cfg`. The API tokens/keys can be obtained by creating a new application [here](https://old.reddit.com/prefs/apps).
 
 ```
@@ -77,5 +83,7 @@ streamlit run streamlit/main.py
 As a final note, if you want to query a different subreddit name, you will have to restart (terminate and start again) the producer-consumer and refresh Streamlit. 
 
 ## Acknowledgements
-Inspired by [nama1arpit/reddit-streaming-pipeline](https://github.com/nama1arpit/reddit-streaming-pipeline/tree/main)
+
+- Docker images: `wurstmeister/zookeeper`, `wurstmeister/kafka`, `cassandra`.
+- Inspired by [nama1arpit/reddit-streaming-pipeline](https://github.com/nama1arpit/reddit-streaming-pipeline/tree/main)
 
