@@ -6,8 +6,8 @@ This is an end-to-end project dedicated to streaming, processing, and visualizin
 - PRAW: A Python library that allows easy access to the Reddit API, and enables crawling live comments from any subreddit.
 - Kafka: A distributed streaming system that can handle large throughput of data and acts as a broker between the crawler and the processor.
 - PySpark: A Python interface for Apache Spark, a powerful framework for large-scale data processing. 
-- Cassandra: A distributed NoSQL database system that provides high availability and scalability. 
-- Streamlit: A Python library that simplifies the creation of web applications. 
+- Cassandra: A distributed NoSQL database system that provides high availability, scalability, and robustness towards errors. 
+- Streamlit: A Python library that simplifies the creation and deployment of web interfaces. 
 
 It utilizes the Python Reddit API Wrapper (PRAW) to crawl live comments from a subreddit to distribute them into Kafka as streams. The streams are then processed in PySpark, and the processed data are written to a Cassandra cluster. Finally, Streamlit reads the data from Cassandra and displays them on a GUI.
   
