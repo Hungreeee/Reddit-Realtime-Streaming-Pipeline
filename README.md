@@ -42,7 +42,7 @@ On startup, the Streamlit interface allows the user to create a query of a subre
 ## Example
 Below is an example use case of the dashboard with the subreddit [r/worldnews](https://www.reddit.com/r/worldnews/) (speed up):
 
-https://github.com/Hungreeee/Reddit-Realtime-Streaming-Pipeline/assets/46376260/fb0671d0-4930-406d-a3cd-307e70f896a4
+https://github.com/Hungreeee/Reddit-Realtime-Streaming-Pipeline/assets/46376260/44f79db2-5932-46c5-bd86-6cca67b8410d
 
 Please note that the chosen metrics and visualizations only serve for prototyping purposes, and they may not be meaningful when assessed over a longer period. 
 
