@@ -10,7 +10,7 @@ import findspark
 findspark.init()
 
 class Consumer:
-    def __init__(self, topic_list: str):
+    def __init__(self, topic_list: list):
         self.topic_list = topic_list
 
         self.spark = SparkSession \
