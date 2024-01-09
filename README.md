@@ -3,13 +3,13 @@
 ## Introduction
 This is an end-to-end project dedicated to streaming, processing, and visualizing the sentiment aspects of Reddit. The system can be used to monitor the sentiment trends of any subreddit and gain insights into the opinions and emotions of the community. The main tech stacks involved are:
 
-- PRAW: A Python library that allows easy access to the Reddit API, and enables crawling live comments from any subreddit.
+- Python Reddit API Wrapper (PRAW): A Python library that allows easy access to the Reddit API, and enables crawling live comments from any subreddit.
 - Kafka: A distributed streaming system that can handle large throughput of data and acts as a broker between the crawler and the processor.
 - PySpark: A Python interface for Apache Spark, a powerful framework for large-scale data processing. 
 - Cassandra: A distributed NoSQL database system that provides high availability, scalability, and robustness towards errors. 
 - Streamlit: A Python library that simplifies the creation and deployment of web interfaces. 
 
-It utilizes the Python Reddit API Wrapper (PRAW) to crawl live comments from a subreddit to distribute them into Kafka as streams. The streams are then processed in PySpark, and the processed data are written to a Cassandra cluster. Finally, Streamlit reads the data from Cassandra and displays them on a GUI.
+It utilizes PRAW to crawl live comments from a subreddit to distribute them into Kafka as streams. The streams are then processed in PySpark, and the processed data are written to a Cassandra cluster. Finally, Streamlit reads the data from Cassandra and displays them on a GUI.
   
 The streaming pipeline is designed towards simplicity and effectiveness. It is deployed using Docker and docker-compose. 
 
@@ -40,11 +40,11 @@ Upon starting, `docker-compose` executes a CQL script to initialize keyspace and
 On startup, the Streamlit interface allows the user to create a query of a subreddit name. This information is fed to the producer and consumer through an event listener, which then triggers them to start working. Finally, through connection to the Cassandra cluster, the interface makes queries continuously and visualizes the data. 
 
 ## Example
-Below is an example use case of the dashboard with the subreddit [r/worldnews](https://www.reddit.com/r/worldnews/):
+Below is an example use case of the dashboard with the subreddit [r/worldnews](https://www.reddit.com/r/worldnews/) (speed up):
 
-https://github.com/Hungreeee/Reddit-Realtime-Streaming-Pipeline/assets/46376260/e99fbcc4-1c5b-4390-be61-1e25088707da
+https://github.com/Hungreeee/Reddit-Realtime-Streaming-Pipeline/assets/46376260/44f79db2-5932-46c5-bd86-6cca67b8410d
 
-Please note that the chosen metrics and visualizations only serve for prototyping purposes, and they may not be meaningful once scaled or run over a prolonged period. 
+Please note that the chosen metrics and visualizations only serve for prototyping purposes, and they may not be meaningful when assessed over a longer period. 
 
 ## Installation & Setup
 
